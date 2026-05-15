@@ -1,18 +1,24 @@
 package com.oleg.todoapp.ui.screens.details
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.oleg.todoapp.domain.repository.TodoRepository
+import com.oleg.todoapp.domain.usecase.GetTodoUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class TodoDetailsViewModel(
-    private val repository: TodoRepository,
-    private val todoId: Int,
+@HiltViewModel
+class TodoDetailsViewModel @Inject constructor(
+    private val getTodo: GetTodoUseCase,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+    private val todoId: Int = checkNotNull(savedStateHandle["todoId"]) {
+        "Todo id is required"
+    }
 
     private val _uiState = MutableStateFlow<TodoDetailsUiState>(TodoDetailsUiState.Loading)
     val uiState: StateFlow<TodoDetailsUiState> = _uiState.asStateFlow()
@@ -25,7 +31,7 @@ class TodoDetailsViewModel(
         _uiState.value = TodoDetailsUiState.Loading
 
         viewModelScope.launch {
-            repository.getTodo(todoId)
+            getTodo(todoId)
                 .onSuccess { todo ->
                     _uiState.value = TodoDetailsUiState.Success(todo)
                 }
@@ -35,18 +41,5 @@ class TodoDetailsViewModel(
                     )
                 }
         }
-    }
-
-    companion object {
-        fun provideFactory(
-            repository: TodoRepository,
-            todoId: Int,
-        ): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return TodoDetailsViewModel(repository, todoId) as T
-                }
-            }
     }
 }
