@@ -6,9 +6,6 @@ on:
       - main
   pull_request:
 
-permissions:
-  contents: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,7 +25,7 @@ jobs:
         with:
           gradle-version: 8.9
 
-      - name: Restore Gradle wrapper jar if missing
+      - name: Restore Gradle wrapper if missing
         run: |
           if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
             gradle wrapper --gradle-version 8.9
@@ -36,14 +33,3 @@ jobs:
 
       - name: Build debug APK
         run: ./gradlew assembleDebug
-
-      - name: Commit restored wrapper jar
-        if: github.event_name == 'push'
-        run: |
-          if [ -n "$(git status --porcelain -- gradlew gradlew.bat gradle/wrapper)" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add gradlew gradlew.bat gradle/wrapper
-            git commit -m "Restore Gradle wrapper"
-            git push
-          fi
