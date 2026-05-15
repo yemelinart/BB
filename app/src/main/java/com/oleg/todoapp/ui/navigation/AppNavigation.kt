@@ -2,15 +2,13 @@ package com.oleg.todoapp.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.oleg.todoapp.TodoApplication
 import com.oleg.todoapp.ui.screens.details.TodoDetailsScreen
 import com.oleg.todoapp.ui.screens.details.TodoDetailsViewModel
 import com.oleg.todoapp.ui.screens.list.TodoListScreen
@@ -26,16 +24,13 @@ private sealed class Destination(val route: String) {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    val appContainer = (LocalContext.current.applicationContext as TodoApplication).appContainer
 
     NavHost(
         navController = navController,
         startDestination = Destination.TodoList.route,
     ) {
         composable(route = Destination.TodoList.route) {
-            val viewModel: TodoListViewModel = viewModel(
-                factory = TodoListViewModel.provideFactory(appContainer.todoRepository),
-            )
+            val viewModel: TodoListViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
             TodoListScreen(
@@ -54,17 +49,8 @@ fun AppNavigation() {
                     type = NavType.IntType
                 },
             ),
-        ) { backStackEntry ->
-            val todoId = checkNotNull(backStackEntry.arguments?.getInt("todoId")) {
-                "Todo id is required"
-            }
-            val viewModel: TodoDetailsViewModel = viewModel(
-                key = "todo-details-$todoId",
-                factory = TodoDetailsViewModel.provideFactory(
-                    repository = appContainer.todoRepository,
-                    todoId = todoId,
-                ),
-            )
+        ) {
+            val viewModel: TodoDetailsViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
             TodoDetailsScreen(
