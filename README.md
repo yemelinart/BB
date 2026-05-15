@@ -14,7 +14,9 @@ Todo Explorer is a native Android application that retrieves todo items from the
 - Retrofit
 - kotlinx.serialization
 - Navigation Compose
-- Manual dependency injection
+- Hilt dependency injection
+- KSP
+- Gradle Version Catalog
 
 ## API Endpoint
 
@@ -29,7 +31,7 @@ Todo Explorer is a native Android application that retrieves todo items from the
 - Fetches full todo details by task ID on the details screen
 - Handles loading, success, error, and empty states for the list
 - Handles loading, success, and error states for details
-- Keeps networking and repository logic outside the UI layer
+- Keeps networking, dependency creation, repository logic, and screen state outside the UI layer
 
 ## How to Run
 
@@ -40,11 +42,10 @@ Todo Explorer is a native Android application that retrieves todo items from the
 Command-line build:
 
 ```bash
-gradle wrapper --gradle-version 8.9
 ./gradlew assembleDebug
 ```
 
-The app needs internet access because it loads data from JSONPlaceholder.
+The app uses Android SDK 36 and needs internet access because it loads data from JSONPlaceholder.
 
 ## Screens
 
@@ -67,19 +68,9 @@ The details screen includes a top app bar with back navigation and fetches the s
 - Title
 - Completion status
 
-## Validation
-
-The project was validated locally with:
-
-```bash
-./gradlew assembleDebug
-./gradlew lintDebug
-```
-
-The GitHub Actions workflow also builds the debug APK.
-
 ## Assumptions
 
 - The JSONPlaceholder API is available and returns the expected todo schema.
 - The details screen intentionally refetches the selected todo by ID instead of passing the full object through navigation.
-- Manual dependency injection is used because the app is small and does not need Hilt-level setup.
+- Hilt is used for dependency injection to keep object creation out of UI and navigation code.
+- Screen ViewModels are created through Hilt, and the details screen receives the selected task ID through Navigation Compose and `SavedStateHandle`.
