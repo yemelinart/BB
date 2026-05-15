@@ -66,6 +66,15 @@ The details screen includes a top app bar with back navigation and fetches the s
 - Title
 - Completion status
 
+## Validation
+
+The project was validated locally with:
+
+```bash
+./gradlew assembleDebug
+./gradlew lintDebug
+```
+
 ## Assumptions
 
 - The JSONPlaceholder API is available and returns the expected todo schema.
