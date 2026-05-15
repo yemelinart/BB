@@ -1,16 +1,18 @@
 package com.oleg.todoapp.ui.screens.list
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.oleg.todoapp.domain.repository.TodoRepository
+import com.oleg.todoapp.domain.usecase.GetTodosUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class TodoListViewModel(
-    private val repository: TodoRepository,
+@HiltViewModel
+class TodoListViewModel @Inject constructor(
+    private val getTodos: GetTodosUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<TodoListUiState>(TodoListUiState.Loading)
@@ -24,7 +26,7 @@ class TodoListViewModel(
         _uiState.value = TodoListUiState.Loading
 
         viewModelScope.launch {
-            repository.getTodos()
+            getTodos()
                 .onSuccess { todos ->
                     _uiState.value = if (todos.isEmpty()) {
                         TodoListUiState.Empty
@@ -38,15 +40,5 @@ class TodoListViewModel(
                     )
                 }
         }
-    }
-
-    companion object {
-        fun provideFactory(repository: TodoRepository): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return TodoListViewModel(repository) as T
-                }
-            }
     }
 }
