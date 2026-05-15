@@ -4,8 +4,9 @@ import com.oleg.todoapp.data.model.toDomain
 import com.oleg.todoapp.data.remote.TodoApiService
 import com.oleg.todoapp.domain.model.Todo
 import com.oleg.todoapp.domain.repository.TodoRepository
+import javax.inject.Inject
 
-class DefaultTodoRepository(
+class DefaultTodoRepository @Inject constructor(
     private val apiService: TodoApiService,
 ) : TodoRepository {
 
