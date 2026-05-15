@@ -40,6 +40,7 @@ Todo Explorer is a native Android application that retrieves todo items from the
 Command-line build:
 
 ```bash
+gradle wrapper --gradle-version 8.9
 ./gradlew assembleDebug
 ```
 
@@ -74,6 +75,8 @@ The project was validated locally with:
 ./gradlew assembleDebug
 ./gradlew lintDebug
 ```
+
+The GitHub Actions workflow also builds the debug APK.
 
 ## Assumptions
 
